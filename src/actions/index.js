@@ -1,12 +1,23 @@
 import { auth, googleAuthProvider, storage } from '../firebase'
 import db from '../firebase';
-import { SET_USER } from './actionType';
+import { SET_LOADING_STATUS, SET_USER, GET_ARTICLES } from './actionType';
+// import { SET_LOADING_STATUS } from './actionType';
 
+export const getArticles = (payload) => ({
+    type: GET_ARTICLES,
+    payload: payload,
+})
 
 export const setUser = (payload) => ({
     type: SET_USER,
     user: payload
 });
+
+export const setLoading = (status) => ({
+    type: SET_LOADING_STATUS,
+    status: status,
+});
+
 export function signInAPI() {
     return (dispatch) => {
         auth.signInWithPopup(googleAuthProvider).then((payload) => {
@@ -38,6 +49,7 @@ export function signOutAPI() {
 
 export function postArticleAPI(payload) {
     return (dispatch) => {
+        dispatch(setLoading(true));
         if (payload.image != '') {
             const upload = storage
                 .ref(`images/${payload.image.name}`)
@@ -63,6 +75,7 @@ export function postArticleAPI(payload) {
                         comments: 0,
                         description: payload.description,
                     });
+                    dispatch(setLoading(false));
                 }
             );
 
@@ -79,7 +92,36 @@ export function postArticleAPI(payload) {
                 comments: 0,
                 description: payload.description,
             });
+            dispatch(setLoading(false));
+        } else {
+            db.collection("articles").add({
+                actor: {
+                    description: payload.user.email,
+                    title: payload.user.displayName,
+                    date: payload.timestamp,
+                    image: payload.user.photoURL
+                },
+                video: "",
+                sharedImage: "",
+                comments: 0,
+                description: payload.description,
+            });
+            dispatch(setLoading(false));
         }
     };
 
+}
+
+export function getArticlesAPI() {
+
+    return (dispatch) => {
+        let payload;
+
+        db.collection('articles').orderBy('actor.date', 'desc')
+            .onSnapshot((snapshot) => {
+                payload = snapshot.docs.map((doc) => doc.data());
+                console.log(payload);
+                dispatch(getArticles(payload));
+            });
+    };
 }

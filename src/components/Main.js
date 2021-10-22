@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from "styled-components";
 import PostModal from './PostModal';
+import { connect } from 'react-redux';
+import { getArticlesAPI } from '../actions';
+import ReactPlayer from 'react-player';
 
 const Main = (props) => {
     const [showModal, setShowModal] = useState("close");
+    useEffect(() => {
+        props.getArticles();
+    }, []);
     const handleClick = (e) => {
         if (e.target !== e.currentTarget) {
             return;
@@ -21,94 +27,118 @@ const Main = (props) => {
         }
     }
     return (
-        <Container>
-            <ShareBox>
-                <div>
-                    <img src="/images/user.svg" alt="" />
-                    <button onClick={handleClick}>Start a post</button>
-                </div>
-                <div>
-                    <button>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="#70b5f9" width="24" height="24" focusable="false"><path d="M19 4H5a3 3 0 00-3 3v10a3 3 0 003 3h14a3 3 0 003-3V7a3 3 0 00-3-3zm1 13a1 1 0 01-.29.71L16 14l-2 2-6-6-4 4V7a1 1 0 011-1h14a1 1 0 011 1zm-2-7a2 2 0 11-2-2 2 2 0 012 2z"></path></svg>
-                        <span>Photo</span>
-                    </button>
-                    <button>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="rgb(43,206,52)" class="mercado-match" width="24" height="24" focusable="false">
-                            <path d="M19 4H5a3 3 0 00-3 3v10a3 3 0 003 3h14a3 3 0 003-3V7a3 3 0 00-3-3zm-9 12V8l6 4z"></path>
-                        </svg>
-                        <span>Video</span>
-                    </button>
-                    <button>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="orange" width="24" height="24" focusable="false"><path d="M3 3v15a3 3 0 003 3h12a3 3 0 003-3V3zm13 1.75A1.25 1.25 0 1114.75 6 1.25 1.25 0 0116 4.75zm-8 0A1.25 1.25 0 116.75 6 1.25 1.25 0 018 4.75zM19 18a1 1 0 01-1 1H6a1 1 0 01-1-1V9h14zm-5.9-3a1 1 0 00-1-1H12a3.12 3.12 0 00-1 .2l-1-.2v-3h3.9v1H11v1.15a3.7 3.7 0 011.05-.15 1.89 1.89 0 012 1.78V15a1.92 1.92 0 01-1.84 2H12a1.88 1.88 0 01-2-1.75 1 1 0 010-.25h1a.89.89 0 001 1h.1a.94.94 0 001-.88z"></path></svg>
-                        <span>Event</span>
-                    </button>
-                    <button>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="chocolate" width="24" height="24" focusable="false"><path d="M21 3v2H3V3zm-6 6h6V7h-6zm0 4h6v-2h-6zm0 4h6v-2h-6zM3 21h18v-2H3zM13 7H3v10h10z"></path></svg>
-                        <span>Wtie article</span>
-                    </button>
-                </div>
+        <>
 
-            </ShareBox>
-            <div>
-                <Article>
-                    <SharedActor>
-                        <a>
-                            <img src="/images/user.svg" alt="" />
-                            <div>
-                                <span>Title</span>
-                                <span>Info</span>
-                                <span>Date</span>
+            <Container>
+                <ShareBox>
+                    <div>
+                        {props.user && props.user.photoURL ?
+                            (<img src={props.user.photoURL} />) :
+                            (<img src="/images/user.svg" alt="" />)
+                        }
 
-                            </div>
-                        </a>
-                        <button>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor" width="24" height="24" focusable="false"><path d="M14 12a2 2 0 11-2-2 2 2 0 012 2zM4 10a2 2 0 102 2 2 2 0 00-2-2zm16 0a2 2 0 102 2 2 2 0 00-2-2z"></path></svg>
+                        <button disabled={props.loading ? true : false} onClick={handleClick}>
+                            Start a post
                         </button>
-                    </SharedActor>
-                    <Description>
-                        Description
-                    </Description>
-                    <SharedImage>
-                        <a>
-                            <img src="https://cdn.pixabay.com/photo/2021/08/25/20/42/field-6574455_960_720.jpg 1x, https://cdn.pixabay.com/photo/2021/08/25/20/42/field-6574455_1280.jpg 2x" alt="" />
-                        </a>
-                    </SharedImage>
-                    <SocialCounts>
-                        <li>
-                            <button>
-                                <img src="images/like-thumbnail-linkedin.svg" alt="" />
-                                <img src="images/clap-thumbnail-linkedin.svg" alt="" />
-                                <span>75</span>
-                            </button>
-                        </li>
-                        <li>
-                            <a>
-                                2 comments
-                            </a>
-                        </li>
-                    </SocialCounts>
-                    <SocialActions>
+                    </div>
+                    <div>
                         <button>
-                            <img src="images/like-icon.svg" alt="" />
-                            <span>Like</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="#70b5f9" width="24" height="24" focusable="false"><path d="M19 4H5a3 3 0 00-3 3v10a3 3 0 003 3h14a3 3 0 003-3V7a3 3 0 00-3-3zm1 13a1 1 0 01-.29.71L16 14l-2 2-6-6-4 4V7a1 1 0 011-1h14a1 1 0 011 1zm-2-7a2 2 0 11-2-2 2 2 0 012 2z"></path></svg>
+                            <span>Photo</span>
                         </button>
                         <button>
-                            <img src="images/comment-icon.svg" alt="" />
-                            <span>Comments</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="rgb(43,206,52)" class="mercado-match" width="24" height="24" focusable="false">
+                                <path d="M19 4H5a3 3 0 00-3 3v10a3 3 0 003 3h14a3 3 0 003-3V7a3 3 0 00-3-3zm-9 12V8l6 4z"></path>
+                            </svg>
+                            <span>Video</span>
                         </button>
                         <button>
-                            <img src="images/share-icon.svg" alt="" />
-                            <span>Share</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="orange" width="24" height="24" focusable="false"><path d="M3 3v15a3 3 0 003 3h12a3 3 0 003-3V3zm13 1.75A1.25 1.25 0 1114.75 6 1.25 1.25 0 0116 4.75zm-8 0A1.25 1.25 0 116.75 6 1.25 1.25 0 018 4.75zM19 18a1 1 0 01-1 1H6a1 1 0 01-1-1V9h14zm-5.9-3a1 1 0 00-1-1H12a3.12 3.12 0 00-1 .2l-1-.2v-3h3.9v1H11v1.15a3.7 3.7 0 011.05-.15 1.89 1.89 0 012 1.78V15a1.92 1.92 0 01-1.84 2H12a1.88 1.88 0 01-2-1.75 1 1 0 010-.25h1a.89.89 0 001 1h.1a.94.94 0 001-.88z"></path></svg>
+                            <span>Event</span>
                         </button>
                         <button>
-                            <img src="images/send-icon.svg" alt="" />
-                            <span>Send</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="chocolate" width="24" height="24" focusable="false"><path d="M21 3v2H3V3zm-6 6h6V7h-6zm0 4h6v-2h-6zm0 4h6v-2h-6zM3 21h18v-2H3zM13 7H3v10h10z"></path></svg>
+                            <span>Wtie article</span>
                         </button>
-                    </SocialActions>
-                </Article>
-            </div>
-            <PostModal showModal={showModal} handleClick={handleClick} />
-        </Container>
+                    </div>
+
+                </ShareBox>
+                {props.articles.length === 0 ?
+                    (<p>There are no articles</p>)
+                    : (<Content>
+                        {props.loading === true ? (<img src='/images/spin-loader.svg' alt='' />) : ''}
+                        {props.articles.length !== 0 &&
+                            props.articles.map((article, key) => (
+                                <Article key={key}>
+                                    <SharedActor>
+                                        <a>
+                                            <img src={article.actor.image} alt="" />
+                                            <div>
+                                                <span>{article.actor.title}</span>
+                                                <span>{article.actor.description}</span>
+                                                <span>{article.actor.date.toDate().toLocaleDateString()}</span>
+                                            </div>
+                                        </a>
+                                        <button>
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor" width="24" height="24" focusable="false"><path d="M14 12a2 2 0 11-2-2 2 2 0 012 2zM4 10a2 2 0 102 2 2 2 0 00-2-2zm16 0a2 2 0 102 2 2 2 0 00-2-2z"></path></svg>
+                                        </button>
+                                    </SharedActor>
+                                    <Description>
+                                        <span>{article.description}</span>
+                                    </Description>
+                                    {
+                                        !article.sharedImage && article.video ? (<ReactPlayer width="100%" url={article.video} />)
+                                            :
+                                            article.sharedImage !== '' && (<SharedImage>
+                                                <a>
+                                                    {/* <img src="https://cdn.pixabay.com/photo/2021/08/25/20/42/field-6574455_960_720.jpg 1x, https://cdn.pixabay.com/photo/2021/08/25/20/42/field-6574455_1280.jpg 2x" alt="" /> */}
+                                                    <img src={article.sharedImage} alt="" />
+                                                </a>
+                                            </SharedImage>)
+                                    }
+                                    <SocialCounts>
+                                        <li>
+                                            <button>
+                                                <img src="images/like-thumbnail-linkedin.svg" alt="" />
+                                                <img src="images/clap-thumbnail-linkedin.svg" alt="" />
+                                                <span>75</span>
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <a>
+                                                {article.comments} comments
+                                            </a>
+                                        </li>
+                                    </SocialCounts>
+                                    <SocialActions>
+                                        <button>
+                                            <img src="images/like-icon.svg" alt="" />
+                                            <span>Like</span>
+                                        </button>
+                                        <button>
+                                            <img src="images/comment-icon.svg" alt="" />
+                                            <span>Comments</span>
+                                        </button>
+                                        <button>
+                                            <img src="images/share-icon.svg" alt="" />
+                                            <span>Share</span>
+                                        </button>
+                                        <button>
+                                            <img src="images/send-icon.svg" alt="" />
+                                            <span>Send</span>
+                                        </button>
+                                    </SocialActions>
+                                </Article>
+                            ))}
+
+                    </Content>
+                    )
+                }
+
+                <PostModal showModal={showModal} handleClick={handleClick} />
+            </Container>
+
+        </>
     )
 };
 
@@ -191,6 +221,7 @@ const Article = styled(CommonCard)`
     overflow:visible;
     /* width:800px; */
     margin:auto;
+    margin-bottom: 21px;
 `;
 
 const SharedActor = styled.div`
@@ -224,6 +255,7 @@ img{
     margin-left: 8px;
     overflow:hidden;
     span{
+        /* font-size: 12px; */
         text-align:left;
         &:first-child{
             font-size:14px;
@@ -233,6 +265,7 @@ img{
         & :nth-child(n+1) {
             font-size: 12px;
             color:rgba(0,0,0,0.6);
+            /* color:blue; */
         }
     }
 }
@@ -284,6 +317,8 @@ li{
     font-size:12px;
     button{
         display:flex;
+        border:none;
+        background-color: white;
     }
     a{
         color:rgb(10, 102, 194);
@@ -300,13 +335,15 @@ li{
 const SocialActions = styled.div`
     align-items: center;
     display: flex;
-    justify-content: center;
+    justify-content: space-evenly;
     margin:0;
     min-height:40px;
     padding:4px 8px;
     button{
-        display: inline-flex;
+        display:flex;
         padding: 8px;
+        border:none;
+        background-color: white;
         align-items:center;
         color:#0a66c2;
         @media(min-width:768px){
@@ -315,7 +352,28 @@ const SocialActions = styled.div`
             }
         }
     }
-
-
 `;
-export default Main;
+
+const Content = styled.div`
+    text-align: center;
+    & > img{
+        width:30px;
+    }
+`;
+{/* <img src='/images/spin-loader.svg' alt='' /> */ }
+const mapStateToProps = (state) => {
+    // console.log(state.articleState.loading);
+    return {
+        loading: state.articleState.loading,
+        user: state.userState.user,
+        articles: state.articleState.articles,
+    };
+
+};
+
+const mapDispatchToProps = (dispatch) => ({
+    // signOut: () => dispatch(signOutAPI())
+    getArticles: () => dispatch(getArticlesAPI()),
+});
+export default connect(mapStateToProps, mapDispatchToProps)(Main);
+// export default Main;

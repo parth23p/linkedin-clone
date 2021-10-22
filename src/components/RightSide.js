@@ -55,6 +55,7 @@ const RightSide = (props) => {
 const Container = styled.div` 
 grid-area:rightside;
 
+
 `;
 
 const FollowCard = styled.div`

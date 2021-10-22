@@ -67,6 +67,7 @@ const LeftSide = (props) => {
 
 const Container = styled.div` 
 grid-area:leftside ;
+/* position: fixed; */
 `;
 
 const ArtCard = styled.div`

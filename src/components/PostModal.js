@@ -227,9 +227,17 @@ const ShareCreation = styled.div`
 const AssetButton = styled.button`
         display: flex;
         align-items: center;
+        padding:2px 8px;
         height: 40px;
         min-width: auto;
-        color: rgba(0, 0, 0, 0.5);
+        color: rgba(0, 0, 0, 0.8);
+        border:none;
+        border-radius: 25px;
+        margin: 0px 4px;
+        &:hover{
+            background-color:rgba(0, 0, 0, 0.5); 
+            color: rgba(0, 0, 0, 0.99);
+        }
         `;
 
 const AttachAssets = styled.div`
